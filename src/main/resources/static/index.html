@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#173d35">
+    <title>GrievanceTrack | Citizen services</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" href="#dashboard"><span class="brand-mark">G</span><span>GrievanceTrack</span></a>
+    <span class="service-label"><span class="live-dot"></span> City service desk</span>
+</header>
+<nav class="main-nav" aria-label="Main navigation">
+    <a href="#dashboard" data-nav="dashboard">Dashboard</a>
+    <a href="#file" data-nav="file">File a Complaint</a>
+    <a href="#track" data-nav="track">Track Complaint</a>
+    <a href="#complaints" data-nav="complaints">All Complaints</a>
+    <a href="#departments" data-nav="departments">Departments</a>
+    <a href="#categories" data-nav="categories">Categories &amp; SLA</a>
+</nav>
+<main class="page-shell">
+    <section class="intro">
+        <p class="eyebrow">CITIZEN SERVICES <span>/</span> COMPLAINTS</p>
+        <h1>Make your neighborhood <em>better.</em></h1>
+        <p class="intro-copy">Report a local issue, follow its progress, and help your city respond on time.</p>
+    </section>
+
+    <section class="view" id="view-dashboard" aria-labelledby="dashboard-title">
+        <div class="section-heading"><div><p class="eyebrow">AT A GLANCE</p><h2 id="dashboard-title">Service dashboard</h2></div><button class="refresh-button" data-refresh type="button" title="Refresh dashboard" aria-label="Refresh dashboard">&#8635;</button></div>
+        <div class="stats-grid">
+            <div class="stat"><span class="stat-value" id="stat-total">0</span><span class="stat-label">Total complaints</span></div>
+            <div class="stat"><span class="stat-value" id="stat-open">0</span><span class="stat-label">Open</span></div>
+            <div class="stat"><span class="stat-value" id="stat-resolved">0</span><span class="stat-label">Resolved</span></div>
+            <div class="stat"><span class="stat-value" id="stat-escalated">0</span><span class="stat-label">Escalated</span></div>
+        </div>
+        <div class="dashboard-grid">
+            <section class="content-panel"><div class="section-heading"><div><p class="eyebrow">SLA ALERTS</p><h2>Recent escalations</h2></div></div><div id="dashboard-alerts" class="stack-list"></div></section>
+            <section class="content-panel"><div class="section-heading"><div><p class="eyebrow">LATEST REPORTS</p><h2>Recent complaints</h2></div><a class="text-link" href="#complaints">View all</a></div><div id="dashboard-recent" class="stack-list"></div></section>
+        </div>
+    </section>
+
+    <section class="view" id="view-file" aria-labelledby="file-title" hidden>
+        <div class="page-title"><p class="eyebrow">CITIZEN SERVICES</p><h2 id="file-title">File a complaint</h2><p>Tell us what needs attention. The responsible department and SLA are assigned automatically.</p></div>
+        <form id="grievance-form" class="form-panel narrow-form">
+            <label for="citizen-name">Citizen name</label><input id="citizen-name" name="citizenName" maxlength="100" autocomplete="name" required>
+            <label for="category">Issue category</label><select id="category" name="category" required><option value="">Loading categories...</option></select>
+            <label for="severity">Severity</label><select id="severity" name="severity" required>
+                <option value="">Choose severity</option>
+                <option value="LOW">LOW - Few people affected</option>
+                <option value="MEDIUM">MEDIUM - Regular public services affected</option>
+                <option value="HIGH">HIGH - Major disruption or many people affected</option>
+                <option value="CRITICAL">CRITICAL - Immediate danger to life or safety</option>
+            </select>
+            <p class="field-hint">For immediate danger, contact your local emergency services too.</p>
+            <div id="sla-preview" class="sla-preview" hidden></div>
+            <label for="location">Location</label><input id="location" name="location" maxlength="255" placeholder="Street, landmark, or area" required>
+            <label for="description">Description</label><textarea id="description" name="description" maxlength="1000" rows="5" placeholder="Describe the issue" required></textarea>
+            <button class="button button-primary" type="submit">Submit complaint <span aria-hidden="true">&#8594;</span></button>
+            <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+        </form>
+    </section>
+
+    <section class="view" id="view-track" aria-labelledby="track-title" hidden>
+        <div class="page-title"><p class="eyebrow">CITIZEN SERVICES</p><h2 id="track-title">Track a complaint</h2><p>Enter your complaint ID to see its status, SLA, and escalation history.</p></div>
+        <form id="tracking-form" class="tracking-form track-search"><label class="visually-hidden" for="tracking-id">Complaint ID</label><input id="tracking-id" type="number" min="1" placeholder="Complaint ID" required><button class="button button-dark" type="submit">Find complaint</button></form>
+        <p class="form-message" id="tracking-message" role="status" aria-live="polite"></p>
+        <div id="tracking-result" class="tracking-result empty-result"><p>Complaint details will appear here.</p></div>
+        <section class="content-panel history-panel"><p class="eyebrow">AUDIT TRAIL</p><h2>Escalation history</h2><div id="tracking-escalations" class="stack-list"><p class="empty-state">Search for a complaint to view its escalation history.</p></div></section>
+    </section>
+
+    <section class="view" id="view-complaints" aria-labelledby="complaints-title" hidden>
+        <div class="section-heading"><div><p class="eyebrow">SERVICE REGISTER</p><h2 id="complaints-title">All complaints</h2></div><button class="refresh-button" data-refresh type="button" title="Refresh complaints" aria-label="Refresh complaints">&#8635;</button></div>
+        <div class="filter-bar">
+            <label>Category<select id="filter-category"><option value="">All categories</option></select></label>
+            <label>Department<select id="filter-department"><option value="">All departments</option></select></label>
+            <label>Severity<select id="filter-severity"><option value="">All severities</option><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></label>
+            <label>Status<select id="filter-status"><option value="">All statuses</option><option>PENDING</option><option>IN_PROGRESS</option><option>RESOLVED</option><option>CLOSED</option></select></label>
+        </div>
+        <div id="complaints-list" class="stack-list"><p class="empty-state">Loading complaints...</p></div>
+    </section>
+
+    <section class="view" id="view-departments" aria-labelledby="departments-title" hidden>
+        <div class="page-title"><p class="eyebrow">ADMINISTRATION</p><h2 id="departments-title">Department management</h2><p>Manage the municipal teams responsible for complaints.</p></div>
+        <form id="department-form" class="form-panel management-form">
+            <h3 id="department-form-title">Add department</h3><input id="department-edit-id" type="hidden">
+            <label for="department-name">Department name</label><input id="department-name" maxlength="100" required>
+            <label for="department-description">Description</label><input id="department-description" maxlength="255">
+            <div class="form-actions"><button class="button button-primary" type="submit" id="department-submit">Add department</button><button class="button button-light" type="button" id="department-cancel" hidden>Cancel</button></div>
+            <p class="form-message" id="department-message" role="status" aria-live="polite"></p>
+        </form>
+        <div id="department-list" class="stack-list management-list"></div>
+    </section>
+
+    <section class="view" id="view-categories" aria-labelledby="categories-title" hidden>
+        <div class="page-title"><p class="eyebrow">ADMINISTRATION</p><h2 id="categories-title">Category &amp; SLA management</h2><p>Assign a department and configure resolution days for each severity.</p></div>
+        <form id="category-form" class="form-panel management-form">
+            <h3 id="category-form-title">Add category</h3><input id="category-edit-id" type="hidden">
+            <label for="category-name">Category name</label><input id="category-name" maxlength="100" required>
+            <label for="category-department">Responsible department</label><select id="category-department" required><option value="">Loading departments...</option></select>
+            <fieldset class="sla-fields"><legend>SLA duration by severity (days)</legend>
+                <label for="sla-low">LOW</label><input id="sla-low" type="number" min="1" required>
+                <label for="sla-medium">MEDIUM</label><input id="sla-medium" type="number" min="1" required>
+                <label for="sla-high">HIGH</label><input id="sla-high" type="number" min="1" required>
+                <label for="sla-critical">CRITICAL</label><input id="sla-critical" type="number" min="1" required>
+            </fieldset>
+            <div class="form-actions"><button class="button button-primary" type="submit" id="category-submit">Add category</button><button class="button button-light" type="button" id="category-cancel" hidden>Cancel</button></div>
+            <p class="form-message" id="category-message" role="status" aria-live="polite"></p>
+        </form>
+        <div id="category-list" class="stack-list management-list"></div>
+    </section>
+
+    <footer class="page-footer"><span>GrievanceTrack</span><span>Every report deserves a response.</span></footer>
+</main>
+</body>
+</html>
